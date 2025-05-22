@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package com.firelord.matchmaking.proto;
+
+option java_multiple_files = true;
+
+message JoinQueueRequest {
+  int32 userId = 1;
+  string username = 2;
+  repeated Role rolePriorities = 3;
+  Region region = 4;
+  int32 mmr = 5;
+}
+
+message LeaveQueueRequest {
+  int32 userId = 1;
+}
+
+message GameInvitationResponse {
+  int32 userId = 1;
+  string inviteId = 2;
+  bool accepted = 3; // true - accepted, false - declined
+}
+
+message GameInvitation {
+  int32 userId = 1;
+  string inviteId = 2;
+}
+
+enum Role {
+  Mid = 0;
+  Top = 1;
+  Jungle = 2;
+  Carry = 3;
+  Support = 4;
+}
+
+enum Region {
+  US_East = 0;
+  US_West = 1;
+  US_Central = 2;
+}
+
