@@ -3,7 +3,10 @@ package com.firelord.matchmaking.server
 import com.firelord.matchmaking.server.service.MatchmakingService
 import com.firelord.matchmaking.server.service.RoomEvaluator
 import com.firelord.matchmaking.server.service.TeamBuilder
+import com.firelord.matchmaking.shared.Conf.TCP_PORT
 import com.firelord.matchmaking.shared.FireMessageDecoder
+import com.firelord.matchmaking.shared.GameMessageEncoder
+import com.firelord.matchmaking.shared.ProtoToFireMessageEncoder
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
@@ -29,11 +32,15 @@ object FireServer {
                         val pipeline = ch.pipeline()
                         pipeline.addLast(FireMessageDecoder())
                         pipeline.addLast(FromClientMessageHandler(gameService))
+                        pipeline.addLast(GameMessageEncoder())
+                        pipeline.addLast(ProtoToFireMessageEncoder())
                     }
                 })
 
-            val channelFuture = bootstrap.bind(9000).sync()
-            println("Server started on port 9000")
+            val channelFuture = bootstrap.bind(TCP_PORT).sync()
+            println("Server started on port $TCP_PORT")
+            readLine()
+
             channelFuture.channel().closeFuture().sync()
         } finally {
             bossGroup.shutdownGracefully()

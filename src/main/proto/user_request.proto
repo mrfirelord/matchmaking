@@ -6,10 +6,8 @@ option java_multiple_files = true;
 
 message JoinQueueRequest {
   int32 userId = 1;
-  string username = 2;
-  repeated Role rolePriorities = 3;
-  Region region = 4;
-  int32 mmr = 5;
+  repeated Role rolePriorities = 2;
+  int32 mmr = 3;
 }
 
 message LeaveQueueRequest {
@@ -32,7 +30,7 @@ enum Role {
   Top = 1;
   Jungle = 2;
   Carry = 3;
-  Support = 4;
+  Support = 6;
 }
 
 enum Region {

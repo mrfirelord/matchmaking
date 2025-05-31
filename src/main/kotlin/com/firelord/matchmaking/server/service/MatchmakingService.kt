@@ -27,7 +27,7 @@ class MatchmakingService(val teamBuilder: TeamBuilder) : GameService {
     private val runMatchmakingScheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val removeExpiredRoomScheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
-    private val batchSize = 20
+    private val batchSize = 4
 
     init {
         runMatchmakingScheduler.scheduleAtFixedRate(::runMatchmaking, 0, 1, TimeUnit.SECONDS)
@@ -35,9 +35,11 @@ class MatchmakingService(val teamBuilder: TeamBuilder) : GameService {
     }
 
     private fun runMatchmaking() {
+        println("Running matchmaking .... Queue size: ${incomingQueue.size}")
         // todo: when we don't have batchSize people in the queue we might want to build a room from what we have
         if (incomingQueue.size >= batchSize) {
             val players = mutableListOf<QueuedUser>()
+
             for (i in 0 until batchSize) {
                 val user = incomingQueue.poll() ?: break
                 players.add(user)
@@ -122,6 +124,7 @@ class MatchmakingService(val teamBuilder: TeamBuilder) : GameService {
     override fun joinQueue(ctx: ChannelHandlerContext, payload: JoinQueueRequest) {
         userChannels[payload.userId] = ctx.channel()
         incomingQueue.add(QueuedUserFactory.create(payload))
+        println("User ${payload.userId} joined the queue")
     }
 
     override fun leaveQueue(ctx: ChannelHandlerContext, payload: LeaveQueueRequest) {
@@ -131,6 +134,7 @@ class MatchmakingService(val teamBuilder: TeamBuilder) : GameService {
 
     override fun receiveAcceptResponse(ctx: ChannelHandlerContext, response: GameInvitationResponse) {
         var inviteIdToRemove: String? = null
+        println("User ${response.userId} answered to invitation: $response")
 
         roomsLock.read {
             rooms[response.inviteId]?.let { room ->

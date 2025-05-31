@@ -46,7 +46,11 @@ class Room(val teamSize: Int) {
 
     fun inviteIsExpired(): Boolean = System.currentTimeMillis() > inviteExpireTime
 
-    fun isFull() = firstTeam.size == teamSize && secondTeam.size == teamSize
+    fun isFull() = firstTeamIsFull() && secondTeamIsFull()
+
+    fun firstTeamIsFull() = firstTeam.size == teamSize
+
+    fun secondTeamIsFull() = secondTeam.size == teamSize
 
     fun addToFirstTeam(player: QueuedUser) {
         firstTeam += player

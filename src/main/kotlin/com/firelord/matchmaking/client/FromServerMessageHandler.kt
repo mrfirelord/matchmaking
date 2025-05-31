@@ -16,7 +16,9 @@ class FromServerMessageHandler : SimpleChannelInboundHandler<FireMessage>() {
         when (msg.opcode) {
             Opcode.ACCEPT_GAME -> {
                 val gameInvitation = GameInvitation.parseFrom(msg.payload)
-                Thread.sleep(Random.nextInt(5) * 1000L)
+                // Todo imitates delay from client
+//                Thread.sleep(Random.nextInt(5) * 1000L)
+                println("Client received invitation: $gameInvitation")
 
                 ctx.channel().writeAndFlush(
                     GameInvitationResponse.newBuilder()
